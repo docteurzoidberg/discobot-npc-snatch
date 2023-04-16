@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "testprompt": "node src/testprompt.js",
+    "tryprompt": "node src/tryprompt.js",
     "tryfr": "node src/trytranslate2fr.js",
     "trymanouche": "node src/trytranslate2manouche.js",
     "start": "node src/index.js | pino-pretty -t -l",
     "register": "node src/register.js | pino-pretty -t -l"
   },
-  "author": "",
+  "author": "DrZoid",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.9.0",

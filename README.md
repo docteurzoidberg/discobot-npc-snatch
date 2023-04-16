@@ -34,9 +34,9 @@ npm run start
 ## jouer avec les fonctions
 
 ```
-npm run testprompt        //tester directement des prompts openai
+npm run tryprompt         //tester directement des prompts openai
 npm run tryfr             //tester le prompt de traduction vers FR
-npm run trymanouch        //tester le prompt de traduction vers FR
+npm run trymanouche       //tester le prompt de traduction vers Manouche
 ```
 
 ## docker
