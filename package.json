@@ -1,12 +1,14 @@
 {
   "name": "npc-snatch",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "testprompt": "node src/testprompt.js",
-    "try": "node src/trytranslate.js",
-    "start": "node src/index.js | pino-pretty -t -l"
+    "tryfr": "node src/trytranslate2fr.js",
+    "trymanouche": "node src/trytranslate2manouche.js",
+    "start": "node src/index.js | pino-pretty -t -l",
+    "register": "node src/register.js | pino-pretty -t -l"
   },
   "author": "",
   "license": "ISC",

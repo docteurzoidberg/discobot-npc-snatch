@@ -1,11 +1,11 @@
 const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config({ path: __dirname + "/../../.env" });
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY || false,
+});
 
 module.exports = {
-  translateWithOpenAi: async (message) => {
-    const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY || false,
-    });
+  translateToFrWithOpenAi: async (message) => {
     const openai = new OpenAIApi(configuration);
     const messages = [];
     const prompt = `Tu dois moderer en remplacant les messages saisis par des utilisateurs dans un salon de discussion. Voici un exemple message ecris par un francais. Si ce message contient des mots qu'il faut absolument moderer (c'est a dire trop vulgaire, ecrit en style sms entierement, de language manouche, language de rue ou de cité), je souhaite que tu traduises directement le message en language soutenu, en prefixant la réponse par "TRADUCTION:", repond par "RIEN" dans tous les autres cas, ou si le contexte est insuffisant, ou que tu ne comprend pas le message.\n\nMessage:\n`;
@@ -67,10 +67,51 @@ module.exports = {
       }
     }
   },
-  callOpenAi: async (prompt, history = []) => {
-    const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY || false,
+  translateToManoucheWithOpenAi: async (message) => {
+    const openai = new OpenAIApi(configuration);
+    const messages = [];
+    const prompt = `Tu dois traduire en manouche les messages saisis en par des utilisateurs dans un salon de discussion. Voici un exemple message ecris par un francais. Je souhaite que tu traduises directement le message en language manouche, en prefixant la réponse par "TRADUCTION:", repond par "RIEN" dans tous les autres cas, ou si le contexte est insuffisant, ou que tu ne comprend pas le message.\n\nMessage:\n`;
+
+    const samples = [
+      {
+        user: "je ne comprend rien",
+        bot: "TRADUCTION: J'entrave keudal",
+      },
+      {
+        user: "quel abruti",
+        bot: "TRADUCTION: c'koi ce narvalo?!",
+      },
+    ];
+
+    samples.forEach((sample) => {
+      messages.push({ role: "user", content: sample.user });
+      messages.push({ role: "assistant", content: sample.bot });
     });
+
+    messages.push({ role: "user", content: prompt + message });
+    try {
+      const completion = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: messages,
+      });
+      const completion_text = completion.data.choices[0].message.content;
+      if (completion_text.startsWith("TRADUCTION:")) {
+        return completion_text.replace("TRADUCTION:", "").trim();
+      } else if (completion_text.startsWith("RIEN")) {
+        return "RIEN";
+      }
+
+      throw new Error("Unexpected response from OpenAI: " + completion_text);
+    } catch (error) {
+      if (error.response) {
+        console.log(error.response.status);
+        console.log(error.response.data);
+      } else {
+        console.log(error.message);
+      }
+    }
+  },
+  callOpenAi: async (prompt, history = []) => {
     const openai = new OpenAIApi(configuration);
     const messages = [];
 

@@ -2,6 +2,9 @@ const api = require("../lib/api");
 module.exports = {
   name: "messageCreate",
   async execute(client, message) {
+    //return false
+    return;
+
     console.log("messageCreate");
     //ignore bot messages
     if (message.author.bot) return;
