@@ -1,0 +1,19 @@
+version: "3"
+networks:
+  npc-snatch:
+
+services:
+  bot:
+    image: npc-snatch-bot
+    hostname: npc-snatch-bot
+    container_name: npc-snatch-bot
+    tty: true
+    build:
+      context: ./
+    env_file:
+      - .env
+    networks:
+      - npc-snatch
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
