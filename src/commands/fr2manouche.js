@@ -48,7 +48,7 @@ async function commandTranslate(client, interaction) {
       content: "traduction effectuée !",
       ephemeral: true,
     });
-    wait(3000);
+    await wait(3000);
     interaction.deleteReply();
   } catch (error) {
     client.logger.error(error);
