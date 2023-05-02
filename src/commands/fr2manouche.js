@@ -29,10 +29,10 @@ async function commandTranslate(client, interaction) {
     const messageAuthor = targetMessage.author.username;
 
     const messageContent = targetMessage.content;
-    client.logger.debug("message", messageContent);
+    client.logger.debug("message: " + messageContent);
 
     const response = await api.translateToManoucheWithOpenAi(messageContent);
-    client.logger.debug("response", response);
+    client.logger.debug("response: " + response);
 
     if (!response) return;
     //si response contient RIEN, ne rien faire
