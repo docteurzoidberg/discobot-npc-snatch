@@ -8,7 +8,7 @@ const { ApplicationCommandType } = require("discord-api-types/v9");
 const api = require("../lib/api");
 
 const commands = new ContextMenuCommandBuilder()
-  .setName("Trad Ch'ti")
+  .setName("Trad 〉Chtimi")
   .setType(ApplicationCommandType.Message);
 
 /* COMMANDS */
