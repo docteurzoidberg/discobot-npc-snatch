@@ -17,10 +17,11 @@ RUN mkdir /data
 # APP dir
 WORKDIR /app
 
+RUN npm install -g pino-pretty
+
 # NODE_MODULES
 COPY package*.json ./
-RUN npm install --omit=dev          
-RUN npm install -g pino-pretty
+RUN npm ci --omit=dev          
 
 # APP
 COPY . .

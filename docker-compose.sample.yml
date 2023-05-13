@@ -10,6 +10,10 @@ services:
     tty: true
     build:
       context: ./
+      args:
+        - BOT_TOKEN=
+        - DISCORD_CLIENT_ID=
+        - DISCORD_GUILD_ID=
     env_file:
       - .env
     networks:
