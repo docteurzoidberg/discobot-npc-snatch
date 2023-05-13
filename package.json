@@ -6,7 +6,7 @@
   "scripts": {
     "tryprompt": "node src/tryprompt.js",
     "tryfr": "node src/trytranslate2fr.js",
-    "tryfr": "node src/trytranslate2chtimi.js",
+    "trychtimi": "node src/trytranslate2chtimi.js",
     "trymanouche": "node src/trytranslate2manouche.js",
     "start": "node src/index.js | pino-pretty -t -l",
     "register": "node src/register.js | pino-pretty -t -l"
