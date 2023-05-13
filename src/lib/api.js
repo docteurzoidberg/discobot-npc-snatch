@@ -111,6 +111,50 @@ module.exports = {
       }
     }
   },
+  translateToChtimiWithOpenAi: async (message) => {
+    const openai = new OpenAIApi(configuration);
+    const messages = [];
+    const prompt = `Tu dois traduire en ch'timi des messages saisis par des utilisateurs dans un salon de discussion. Voici un message ecris en francais. Je souhaite que tu traduises directement le message en language ch'timi, en prefixant la réponse par "TRADUCTION:", repond par "RIEN" dans tous les autres cas, ou si le contexte est insuffisant, ou que tu ne comprend pas le message.\n\nMessage:\n`;
+
+    const samples = [
+      {
+        user: "je ne comprend rien",
+        bot: "TRADUCTION: M'comprinds pos, mi.",
+      },
+      {
+        user: "quel abruti",
+        bot: "TRADUCTION: Quel andoule !",
+      },
+    ];
+
+    samples.forEach((sample) => {
+      messages.push({ role: "user", content: sample.user });
+      messages.push({ role: "assistant", content: sample.bot });
+    });
+
+    messages.push({ role: "user", content: prompt + message });
+    try {
+      const completion = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: messages,
+      });
+      const completion_text = completion.data.choices[0].message.content;
+      if (completion_text.startsWith("TRADUCTION:")) {
+        return completion_text.replace("TRADUCTION:", "").trim();
+      } else if (completion_text.startsWith("RIEN")) {
+        return "RIEN";
+      }
+
+      throw new Error("Unexpected response from OpenAI: " + completion_text);
+    } catch (error) {
+      if (error.response) {
+        console.log(error.response.status);
+        console.log(error.response.data);
+      } else {
+        console.log(error.message);
+      }
+    }
+  },
   callOpenAi: async (prompt, history = []) => {
     const openai = new OpenAIApi(configuration);
     const messages = [];
