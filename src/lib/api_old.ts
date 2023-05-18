@@ -1,13 +1,14 @@
-const { Configuration, OpenAIApi } = require("openai");
-require("dotenv").config({ path: __dirname + "/../../.env" });
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Configuration, OpenAIApi } from "openai";
+
 const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY || false,
+  apiKey: process.env.OPENAI_API_KEY || '',
 });
 
-module.exports = {
+export default {
   translateToFrWithOpenAi: async (message) => {
     const openai = new OpenAIApi(configuration);
-    const messages = [];
+    const messages: Array<any> = [];
     const prompt = `Tu dois moderer en remplacant les messages saisis par des utilisateurs dans un salon de discussion. Voici un exemple message ecris par un francais. Si ce message contient des mots qu'il faut absolument moderer (c'est a dire trop vulgaire, ecrit en style sms entierement, de language manouche, language de rue ou de cité), je souhaite que tu traduises directement le message en language soutenu, en prefixant la réponse par "TRADUCTION:", repond par "RIEN" dans tous les autres cas, ou si le contexte est insuffisant, ou que tu ne comprend pas le message.\n\nMessage:\n`;
 
     const samples = [
@@ -50,15 +51,16 @@ module.exports = {
         model: "gpt-3.5-turbo",
         messages: messages,
       });
-      const completion_text = completion.data.choices[0].message.content;
-      if (completion_text.startsWith("TRADUCTION:")) {
-        return completion_text.replace("TRADUCTION:", "").trim();
-      } else if (completion_text.startsWith("RIEN")) {
-        return "RIEN";
+      const completion_text = completion.data.choices[0].message?.content;
+      if (completion_text) {
+        if (completion_text.startsWith("TRADUCTION:")) {
+          return completion_text.replace("TRADUCTION:", "").trim();
+        } else if (completion_text.startsWith("RIEN")) {
+          return "RIEN";
+        }
       }
-
       throw new Error("Unexpected response from OpenAI: " + completion_text);
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
         console.log(error.response.status);
         console.log(error.response.data);
@@ -69,7 +71,7 @@ module.exports = {
   },
   translateToManoucheWithOpenAi: async (message) => {
     const openai = new OpenAIApi(configuration);
-    const messages = [];
+    const messages: Array<any> = [];
     const prompt = `Tu dois traduire en manouche les messages saisis en par des utilisateurs dans un salon de discussion. Voici un exemple message ecris par un francais. Je souhaite que tu traduises directement le message en language manouche, en prefixant la réponse par "TRADUCTION:", repond par "RIEN" dans tous les autres cas, ou si le contexte est insuffisant, ou que tu ne comprend pas le message.\n\nMessage:\n`;
 
     const samples = [
@@ -94,15 +96,16 @@ module.exports = {
         model: "gpt-3.5-turbo",
         messages: messages,
       });
-      const completion_text = completion.data.choices[0].message.content;
-      if (completion_text.startsWith("TRADUCTION:")) {
-        return completion_text.replace("TRADUCTION:", "").trim();
-      } else if (completion_text.startsWith("RIEN")) {
-        return "RIEN";
+      const completion_text = completion.data.choices[0].message?.content;
+      if (completion_text) {
+        if (completion_text.startsWith("TRADUCTION:")) {
+          return completion_text.replace("TRADUCTION:", "").trim();
+        } else if (completion_text.startsWith("RIEN")) {
+          return "RIEN";
+        }
       }
-
       throw new Error("Unexpected response from OpenAI: " + completion_text);
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
         console.log(error.response.status);
         console.log(error.response.data);
@@ -113,7 +116,7 @@ module.exports = {
   },
   translateToChtimiWithOpenAi: async (message) => {
     const openai = new OpenAIApi(configuration);
-    const messages = [];
+    const messages: Array<any> = [];
     const prompt = `Tu dois traduire en ch'timi des messages saisis par des utilisateurs dans un salon de discussion. Voici un message ecris en francais. Je souhaite que tu traduises directement le message en language ch'timi, en prefixant la réponse par "TRADUCTION:", repond par "RIEN" dans tous les autres cas, ou si le contexte est insuffisant, ou que tu ne comprend pas le message.\n\nMessage:\n`;
 
     const samples = [
@@ -138,15 +141,16 @@ module.exports = {
         model: "gpt-3.5-turbo",
         messages: messages,
       });
-      const completion_text = completion.data.choices[0].message.content;
-      if (completion_text.startsWith("TRADUCTION:")) {
-        return completion_text.replace("TRADUCTION:", "").trim();
-      } else if (completion_text.startsWith("RIEN")) {
-        return "RIEN";
+      const completion_text = completion.data.choices[0].message?.content;
+      if (completion_text) {
+        if (completion_text.startsWith("TRADUCTION:")) {
+          return completion_text.replace("TRADUCTION:", "").trim();
+        } else if (completion_text.startsWith("RIEN")) {
+          return "RIEN";
+        }
       }
-
       throw new Error("Unexpected response from OpenAI: " + completion_text);
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
         console.log(error.response.status);
         console.log(error.response.data);
@@ -155,9 +159,9 @@ module.exports = {
       }
     }
   },
-  callOpenAi: async (prompt, history = []) => {
+  callOpenAi: async (prompt, history: Array<any> = []) => {
     const openai = new OpenAIApi(configuration);
-    const messages = [];
+    const messages: Array<any> = [];
 
     history.forEach((sample) => {
       messages.push({ role: "user", content: sample.user });
@@ -170,9 +174,9 @@ module.exports = {
         model: "gpt-3.5-turbo",
         messages: messages,
       });
-      const completion_text = completion.data.choices[0].message.content;
+      const completion_text = completion.data.choices[0].message?.content;
       return completion_text;
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
         console.log(error.response.status);
         console.log(error.response.data);

@@ -1,19 +1,14 @@
-require("dotenv").config();
-const wait = require("node:timers/promises").setTimeout;
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-const { ContextMenuCommandBuilder } = require("@discordjs/builders");
-const { ApplicationCommandType } = require("discord-api-types/v9");
-
-const api = require("../lib/api");
+import { setTimeout as wait } from 'node:timers/promises';
+import { ContextMenuCommandBuilder, ApplicationCommandType } from 'discord.js';
+import * as api from '../lib/openai-gpt';
 
 const commands = new ContextMenuCommandBuilder()
-  .setName("Trad 〉Manouche")
+  .setName("Trad 〉Français")
   .setType(ApplicationCommandType.Message);
 
 /* COMMANDS */
 
-async function commandTranslate(client, interaction) {
+async function commandTranslate(app, interaction) {
   const targetMessage = interaction.targetMessage;
   //ignore bot messages
   if (targetMessage.author.bot) return;
@@ -29,21 +24,21 @@ async function commandTranslate(client, interaction) {
     const messageAuthor = targetMessage.author.username;
 
     const messageContent = targetMessage.content;
-    client.logger.debug("message: " + messageContent);
+    app.logger.debug("message: " + messageContent);
 
-    const response = await api.translateToManoucheWithOpenAi(messageContent);
-    client.logger.debug("response: " + response);
+    const response = await api.translateToFr(messageContent);
+    app.logger.debug("response: " + response);
 
     if (!response) return;
     //si response contient RIEN, ne rien faire
     if (response === "RIEN") return;
 
-    const responseMessage = `Wé ba ske le gadjo **${messageAuthor}** a voulu dire, c'est plutot: \n${response}`;
+    const responseMessage = `Je pense que ce que **${messageAuthor}** souhaitait exprimer était plutot ceci: \n${response}`;
 
     interaction.targetMessage.reply(responseMessage);
 
     const loggerMsg = `Traduction du message ${targetMessage.id} demandée par ${interaction.user.username}`;
-    client.logger.info(loggerMsg);
+    app.logger.info(loggerMsg);
     interaction.editReply({
       content: "traduction effectuée !",
       ephemeral: true,
@@ -51,13 +46,13 @@ async function commandTranslate(client, interaction) {
     await wait(3000);
     interaction.deleteReply();
   } catch (error) {
-    client.logger.error(error);
+    app.logger.error(error);
   }
 }
 
 module.exports = {
   data: commands,
-  async execute(client, interaction) {
-    await commandTranslate(client, interaction);
+  async execute(app, interaction) {
+    await commandTranslate(app, interaction);
   },
 };

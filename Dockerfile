@@ -1,4 +1,6 @@
-FROM node:18-alpine
+FROM node:18-alpine3.17
+
+RUN npm install -g typescript pnpm
 
 ARG BOT_TOKEN
 ARG DISCORD_CLIENT_ID
@@ -17,18 +19,19 @@ RUN mkdir /data
 # APP dir
 WORKDIR /app
 
-RUN npm install -g pino-pretty
-
 # NODE_MODULES
 COPY package*.json ./
-RUN npm ci --omit=dev          
+COPY pnpm-lock.yaml ./ 
+RUN pnpm install --frozen-lockfile  
 
 # APP
 COPY . .
 
+RUN pnpm build
+
 # REGISTER bot commands
-RUN npm run register
+RUN pnpm register
 
 # RUN
-CMD ["dumb-init", "npm", "run", "start"]
+CMD ["dumb-init", "pnpm", "start"]
 

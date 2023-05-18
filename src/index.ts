@@ -1,16 +1,19 @@
-require("dotenv").config({ path: __dirname + "/../.env" });
+import * as dotenv from 'dotenv';
+import * as fs from 'fs';
+import { Signale } from 'signale';
 
-const fs = require("fs");
+dotenv.config({ path: __dirname + '/../.env' });
+
 const basePath = __dirname;
 
-const logger = require("pino")({ level: process.env.LOG_LEVEL || "debug" });
+const logger = new Signale({});
 
-const { Client, Collection, GatewayIntentBits } = require("discord.js");
+import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
 
 //parsing env variables
 const BOT_INVISIBLE = process.env.BOT_INVISIBLE === "true";
 const BOT_TOKEN = process.env.BOT_TOKEN || false;
-const BOT_VERSION = process.env.BOT_VERSION || false;
+const BOT_VERSION = process.env.BOT_VERSION || '';
 const DATA_PATH = process.env.DATA_PATH || "data";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || false;
 
@@ -56,7 +59,7 @@ try {
 
 //check if bot was updated
 let updated = false;
-let botVersion = false;
+let botVersion: string | undefined = undefined;
 const botVersionFile = `${DATA_PATH}/.version`;
 
 //check version file if exists
@@ -90,37 +93,40 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.MessageContent,
   ],
-  partials: ["MESSAGE", "CHANNEL", "REACTION"],
+  partials: [Partials.Channel, Partials.Reaction, Partials.Message],
   presence: {
     status: BOT_INVISIBLE ? "invisible" : "online",
   },
 });
 
-//populate client with commands, events and everything needed by modules
-client.logger = logger;
-client.commands = new Collection();
-client.updated = updated;
-client.invisible = BOT_INVISIBLE === "true";
-client.openaikey = process.env.OPENAI_API_KEY || false;
-client.version = BOT_VERSION;
-client.dataPath = DATA_PATH;
-client.config = {
-  INVISIBLE: BOT_INVISIBLE === "true",
-  ANNOUNCE_CHANNEL: process.env.ANNOUNCE_CHANNEL || false,
-  ANNOUNCE_UPDATES: process.env.ANNOUNCE_UPDATES === "true",
-  ANNOUNCE_READY: process.env.ANNOUNCE_READY === "true",
-};
+const app = {
+  commands: new Collection(),
+  client: client,
+  logger: logger,
+  updated: updated,
+  invisible: BOT_INVISIBLE,
+  openaikey: OPENAI_API_KEY,
+  version: BOT_VERSION,
+  dataPath: DATA_PATH,
+  config: {
+    INVISIBLE: BOT_INVISIBLE,
+    ANNOUNCE_CHANNEL: process.env.ANNOUNCE_CHANNEL || false,
+    ANNOUNCE_UPDATES: process.env.ANNOUNCE_UPDATES === "true",
+    ANNOUNCE_READY: process.env.ANNOUNCE_READY === "true",
+  },
+}
 
 //load event modules
 const eventFiles = fs
   .readdirSync(basePath + "/events")
   .filter((file) => file.endsWith(".js"));
 for (const file of eventFiles) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const event = require(`${basePath}/events/${file}`);
   if (event.once) {
-    client.once(event.name, (...args) => event.execute(client, ...args));
+    client.once(event.name, (...args) => event.execute(app, ...args));
   } else {
-    client.on(event.name, (...args) => event.execute(client, ...args));
+    client.on(event.name, (...args) => event.execute(app, ...args));
   }
 }
 
@@ -129,10 +135,11 @@ const commandFiles = fs
   .readdirSync(basePath + "/commands")
   .filter((file) => file.endsWith(".js"));
 for (const file of commandFiles) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const command = require(`${basePath}/commands/${file}`);
   // Set a new item in the Collection
   // With the key as the command name and the value as the exported module
-  client.commands.set(command.data.name, command);
+  app.commands.set(command.data.name, command);
 }
 
 //handle process signals

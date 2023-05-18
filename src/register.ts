@@ -1,17 +1,24 @@
-require('dotenv').config();
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import * as dotenv from 'dotenv';
+import { Signale } from 'signale';
+dotenv.config();
 
-const logger = require('pino')({ level: process.env.LOG_LEVEL || 'info' });
-const fs = require('fs');
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
+
+const logger = new Signale({})
+
+import * as fs from 'fs';
+
+import { REST, Routes } from 'discord.js';
+
 
 const commandsDir = __dirname + '/commands';
-const commands = [];
+const commands: Array<any> = [];
 const commandFiles = fs
   .readdirSync(commandsDir)
   .filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const command = require(`${commandsDir}/${file}`);
   commands.push(command.data.toJSON());
 }

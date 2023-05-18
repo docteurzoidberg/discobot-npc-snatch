@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 module.exports = {
   name: "ready",
   once: true,
-  async execute(client) {
-    const guilds = client.guilds.cache;
-    const serverArray = [];
+  async execute(app) {
+    const guilds = app.client.guilds.cache;
+    const serverArray: Array<any> = [];
 
     //populate server names and guild ids
     guilds.forEach(async (guild) => {
@@ -22,15 +23,14 @@ module.exports = {
       return `${server.name} (${server.id})`;
     });
 
-    client.logger.info(`NPC-Snatch v${client.version} ready !`);
-    client.logger.info(
-      `Logged in as ${client.user.tag} on ${
-        guilds.size
+    app.logger.info(`NPC-Snatch v${app.version} ready !`);
+    app.logger.info(
+      `Logged in as ${app.client.user.tag} on ${guilds.size
       } servers: ${serverList.join(", ")}`
     );
-    if (client.invisible) {
-      client.logger.warn("Bot status set to invisible !");
-      client.user.setStatus("invisible");
+    if (app.invisible) {
+      app.logger.warn("Bot status set to invisible !");
+      app.client.user.setStatus("invisible");
     }
   },
 };

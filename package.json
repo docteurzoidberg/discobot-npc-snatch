@@ -1,15 +1,18 @@
 {
   "name": "npc-snatch",
   "version": "1.1.0",
-  "description": "Un bot pour traduire de/vers le manouche",
-  "main": "index.js",
+  "description": "Un bot pour traduire des trucs",
+  "main": "dist/index.js",
   "scripts": {
-    "tryprompt": "node src/tryprompt.js",
-    "tryfr": "node src/trytranslate2fr.js",
-    "trychtimi": "node src/trytranslate2chtimi.js",
-    "trymanouche": "node src/trytranslate2manouche.js",
-    "start": "node src/index.js | pino-pretty -t -l",
-    "register": "node src/register.js | pino-pretty -t -l"
+    "clean": "rm -rf ./dist",
+    "build": "pnpm clean && swc src -d ./dist",
+    "start": "node dist/index.js",
+    "register": "node dist/register.js",
+    "testcompletion": "node dist/test-openaicompletion.js",
+    "testfr": "node dist/test-translate2fr.js",
+    "testchtimi": "node dist/test-translate2chtimi.js",
+    "testmanouche": "node dist/test-translate2manouche.js",
+    "testmurloc": "node dist/test-translate2murloc.js"
   },
   "author": "DrZoid",
   "license": "DBAD",
@@ -17,7 +20,17 @@
     "discord.js": "^14.9.0",
     "dotenv": "^16.0.3",
     "openai": "^3.2.1",
-    "pino": "^8.11.0",
-    "readline-sync": "^1.4.10"
+    "readline-sync": "^1.4.10",
+    "signale": "^1.4.0",
+    "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.1.62",
+    "@swc/core": "^1.3.58",
+    "@tsconfig/node18": "^2.0.1",
+    "@types/node": "^20.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.6",
+    "@typescript-eslint/parser": "^5.59.6",
+    "eslint": "^8.40.0"
   }
 }
